@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = MindControl::VERSION
   spec.authors       = [ "Denis Diachkov" ]
   spec.email         = [ "d.diachkov@gmail.com" ]
-  spec.summary       = "Embeddable Pry-based REPL console"
+  spec.summary       = "Embeddable runtime Pry-based REPL console"
   spec.homepage      = "https://github.com/ddiachkov/mind_control"
   spec.license       = "MIT"
 

@@ -1,15 +1,14 @@
 # Mind Control
 
-Embeddable Pry-based REPL console for long-running ruby daemons.
+Embeddable runtime Pry-based REPL console for long-running programs.
 
 Features:
 
-- Full fledged Pry console withmcode highlighting and completion;
-- Allows multiple connections;
 - Executes code without interruption of the host program;
-- Allows STDOUT/STDERR capturing of the host program;
+- Full fledged Pry console with code highlighting and completion;
+- Allows multiple connections;
 - EventMachine integration;
-- Has very few dependencies (no DRb / EventMachine / ZMQ);
+- Has very few dependencies (no DRb or EventMachine);
 
 ## Installation
 
@@ -21,8 +20,8 @@ gem "mind_control"
 
 ## Requirements
 
-- Ruby 1.9+
-- *NIX operating system
+- Ruby 1.9+;
+- *NIX operating system (uses UNIX sockets);
 
 ## Usage
 
@@ -33,17 +32,46 @@ require "mind_control"
 MindControl.start
 ```
 
-To connect to running process:
+You can also set Pry target (`something.pry`):
+
+```ruby
+...
+MindControl.start :target => something
+```
+
+Or Pry options:
+
+```ruby
+...
+MindControl.start :pry => { .. options for pry instance .. }
+```
+
+Or set program name (see "Connection"):
+
+```ruby
+...
+MindControl.start :name => "some name"
+```
+
+### Connection
+
+Run in terminal:
 
 ```console
 $ bundle exec mind_control
 ```
 
-You will be prompted with a list of running processes.
+You will be prompted with a list of currently running MindControlled processes.
+
+Or, if you already know name or PID of process:
+
+```console
+$ bundle exec mind_control name_or_pid
+```
 
 ### Capture output
 
-You can capture STDOUT/STDERR of host process. To do that execute `capture-output` in REPL.
+You can capture STDOUT/STDERR of host program. To do that execute `capture-output` in REPL.
 
 ```text
 [1] pry(main)> capture-output --help
@@ -60,7 +88,7 @@ Captures host program STDOUT and STDERR and prints it to user.
 
 ### EventMachine
 
-MindControl can be used with EventMachine. Just set `EventMachine` as target and
+MindControl can be used with EventMachine. Just require file and set `EventMachine` as target and
 all commands will be evaluated in the context of running reactor.
 
 ```ruby
