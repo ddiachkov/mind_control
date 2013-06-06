@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+Signal.trap( :INT ) { exit }
+
+# Add gem's lib dir to load path
+$LOAD_PATH.unshift File.expand_path( "../../lib", __FILE__ )
+
+require "slop"
+require "mind_control"
+
+# Parse options
+begin
+  options = Slop.parse!( help: true ) do
+    banner "Usage: #{File.basename( $0 )} [socket name] [options]"
+    on "d", "sockets-dir=", "Set sockets search path."
+  end
+rescue Slop::MissingArgumentError => e
+  abort e.message
+end
+
+# Console interface
+cui = MindControl::CUI.new
+
+# Get list of running MindControlled processes
+running_processes =
+  MindControl::Client.get_running_processes( options[ "sockets-dir" ] || MindControl::DEFAULT_SOCKETS_DIR )
+
+unless running_processes.any?
+  cui.show_error "No running processes found!"
+  exit
+end
+
+process =
+  # If filter given
+  if filter = ARGV[ 0 ]
+    # Filter processes by substring in name or pid equality
+    filtered_processes = running_processes.select! { |p| p.name.include?( filter ) || p.pid.to_s == filter.to_i }
+
+    # If filter matches 1 process -- connect to it, otherwise ask user to select process from filtered list
+    filtered_processes.size == 1 ? filtered_processes[ 0 ] : cui.select_process( filtered_processes )
+  else
+    # Ask user to select process
+    cui.select_process( running_processes )
+  end
+
+begin
+  cui.show_debug "Connecting to #{process.name} via #{process.socket} ..."
+  MindControl::Client.connect( process )
+rescue Exception => e
+  cui.show_error e.message
+end
