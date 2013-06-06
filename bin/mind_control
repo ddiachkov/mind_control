@@ -29,22 +29,28 @@ unless running_processes.any?
   exit
 end
 
-process =
+filtered_processes =
   # If filter given
   if filter = ARGV[ 0 ]
-    # Filter processes by substring in name or pid equality
-    filtered_processes = running_processes.select! { |p| p.name.include?( filter ) || p.pid.to_s == filter.to_i }
-
-    # If filter matches 1 process -- connect to it, otherwise ask user to select process from filtered list
-    filtered_processes.size == 1 ? filtered_processes[ 0 ] : cui.select_process( filtered_processes )
+    # Filter processes by name substring and pid equality
+    running_processes.select { |p| p.name.include?( filter ) || p.pid.to_i == filter.to_i }
   else
-    # Ask user to select process
-    cui.select_process( running_processes )
+    []
+  end
+
+# If filter matches 1 process -- connect to it,
+# if filter matches > 1 processes -- ask user to select process from filtered processes,
+# if filter matches no processes -- ask user to select process from all running processes.
+selected_process =
+  case filtered_processes.size
+    when 1 then filtered_processes[ 0 ]
+    when 0 then cui.select_process( running_processes )
+    else        cui.select_process( filtered_processes )
   end
 
 begin
-  cui.show_debug "Connecting to #{process.name} via #{process.socket} ..."
-  MindControl::Client.connect( process )
+  cui.show_debug "Connecting to #{selected_process.name} via #{selected_process.socket} ..."
+  MindControl::Client.connect( selected_process )
 rescue Exception => e
   cui.show_error e.message
 end
