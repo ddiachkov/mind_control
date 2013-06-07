@@ -53,6 +53,8 @@ Or set program name (see "Connection"):
 MindControl.start :name => "some name"
 ```
 
+**NB:** HOME (or XDG_CACHE_HOME) environment variable MUST be set for host program!
+
 ### Connection
 
 Run in terminal:
@@ -96,6 +98,20 @@ require "mind_control"
 require "mind_control/em"
 
 MindControl.start :target => EventMachine
+```
+
+### Capistrano task
+
+You can use capistrano to start SSH session:
+
+```ruby
+task :mind_control, :roles => :app do
+  server = find_servers_for_task( current_task ).first
+
+  exec <<-SH
+    ssh #{server.user || user}@#{server.host} -p #{server.port || 22} -t "#{rvm_shell} -c 'cd #{current_path} && bundle exec mind_control'"
+  SH
+end
 ```
 
 ## TODO
