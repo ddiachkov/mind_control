@@ -35,7 +35,8 @@ module MindControl
     process_name = options[ :name ] || $PROGRAM_NAME
 
     # Make name filesystem safe
-    process_name.gsub! /[^[[:alnum:]]\-_]/, "_"
+    # NB: we can't use gsub! because $PROGRAM_NAME is frozen
+    process_name = process_name.gsub( /[^[[:alnum:]]\-_]/, "_" )
 
     # Some shared temp directory for sockets.
     socket_dir = options[ :sockets_dir ] || DEFAULT_SOCKETS_DIR
