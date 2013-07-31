@@ -68,7 +68,7 @@ module MindControl
           # By default Coolline will kill host program on Ctrl+c. Override it.
           ctrl_c_handler = cool.handlers.find { |handler| handler.char == ?\C-c }
           ctrl_c_handler.block = lambda { |instance|
-            # Just close Pry
+            # XXX: Just close Pry
             instance.instance_variable_set "@should_exit", true
           }
         end

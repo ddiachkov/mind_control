@@ -21,7 +21,7 @@ gem "mind_control"
 ## Requirements
 
 - Ruby 1.9+;
-- *NIX operating system (uses UNIX sockets);
+- *NIX operating system (UNIX sockets is required);
 
 ## Usage
 

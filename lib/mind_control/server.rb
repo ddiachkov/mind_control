@@ -55,7 +55,7 @@ module MindControl
         end
       end
 
-      # We should known if our server failed
+      # We should known if our server has failed
       @server_thread.abort_on_exception = true
     end
 
