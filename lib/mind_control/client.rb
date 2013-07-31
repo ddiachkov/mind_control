@@ -35,7 +35,7 @@ module MindControl
         socket.send_io STDOUT
 
         # Wait for disconnect
-        socket.recv( 0 )
+        socket.recv( 1 )
       end
     end
   end
