@@ -19,10 +19,13 @@ module MindControl
     # @return [Array<MindControl::Client::Process>]
     #
     def get_running_processes( sockets_dir )
-      Dir.glob( File.join( sockets_dir, "*.sock" )).map do |file|
+      processes = Dir.glob( File.join( sockets_dir, "*.sock" )).map do |file|
         name, pid = File.basename( file, ".sock" ).split( "." )
-        Process.new( name, pid, file )
+        Process.new( name, pid.to_i, file )
       end
+
+      # Ignore not existent processes
+      processes.select { |process| ::Process.kill( 0, process.pid ) rescue false }
     end
 
     ##
