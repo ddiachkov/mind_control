@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = [ "lib" ]
 
   spec.add_dependency "highline", "~> 1.6"
-  spec.add_dependency "pry", "~> 0.9"
+  spec.add_dependency "pry", ">= 0.9.11"
   spec.add_dependency "coolline", "~> 0.4"
 
   spec.add_development_dependency "bundler", "~> 1.3"
