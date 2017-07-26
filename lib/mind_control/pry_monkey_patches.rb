@@ -1,16 +1,54 @@
 # encoding: utf-8
 require "pry/pager"
 
-::Pry::Pager.instance_eval do
-  alias :vanilla_page :page
+class Pry::Pager
+  alias :vanilla_best_available :best_available
 
-  # Redefine standard paging method, so it will always write text to current MindControl
-  # output instead of calling system pager or writing to host program $stdout.
-  def self.page( text, pager = nil )
-    if pry_instance = Pry.current[ :mind_control_pry_instance ]
-      pry_instance.output.puts( text )
+  def best_available
+    # If we inside mind-control session
+    if _pry_ == Pry.current[ :mind_control_pry_instance ]
+      # Use our custom pager
+      MindControlPager.new( _pry_.input, _pry_.output )
     else
-      vanilla_page( text, pager )
+      vanilla_best_available
+    end
+  end
+
+  ##
+  # Custom SimplePager based pager that uses MindConrol's IO (not host).
+  #
+  class MindControlPager < NullPager
+    ##
+    # @param [IO] input console input
+    # @param [IO] output console output
+    #
+    def initialize( input, output )
+      super( output )
+
+      @in = input
+      @tracker = PageTracker.new( height - 3, width )
+    end
+
+    ##
+    # Writes string to console with pagination.
+    # @param [String] str
+    #
+    def write( str )
+      str.lines.each do |line|
+        @out.print line
+        @tracker.record line
+
+        if @tracker.page?
+          @out.print "\n"
+          @out.print "\e[0m"
+          @out.print "<page break> --- Press enter to continue " \
+                     "( q<enter> to break ) --- <page break>\n"
+
+          raise StopPaging if @in.readline( "" ).chomp == "q"
+
+          @tracker.reset
+        end
+      end
     end
   end
 end
