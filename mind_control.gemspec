@@ -17,9 +17,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep( %r{^(test|spec|features)/} )
   spec.require_paths = [ "lib" ]
 
-  spec.add_dependency "highline", "~> 1.6"
-  spec.add_dependency "pry", ">= 0.9.11"
-  spec.add_dependency "coolline", "~> 0.4"
+  spec.add_dependency "highline", "~> 1.7"
+  spec.add_dependency "pry", "~> 0.10"
+  spec.add_dependency "coolline", "~> 0.5"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
